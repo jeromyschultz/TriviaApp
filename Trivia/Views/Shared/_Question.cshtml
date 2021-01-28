@@ -1,0 +1,24 @@
+﻿@model IEnumerable<Trivia.Models.QuestionModel>
+
+@{
+    Layout = null;
+}
+
+
+
+@foreach (var item in Model)
+{
+    <div class="question">
+        <div>
+            <p class="question-text">@item.Question</p>
+            <span class="horiz-line"></span>
+        </div>
+    </div>
+    <div class="answers">
+        @foreach (var answer in item.Answers)
+        {
+            <button onclick="getNewQuestion(event)" value="@answer.IsCorrect" class="answer-button">@answer.Text</button>
+        }
+    </div>
+}
+

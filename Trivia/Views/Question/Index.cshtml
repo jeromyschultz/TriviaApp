@@ -1,0 +1,95 @@
+﻿@model IEnumerable<Trivia.Models.QuestionModel>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+
+
+<script>
+
+
+    let streak = 0;
+    let timer = 9;
+    let streakString = "Streak: ";
+    $('.streak-container').html(streakString + streak);
+
+    //Decrement the time every second
+    let timerInterval = setInterval(decrementTime, 1000);
+
+    //Decrements the time by 1
+    function decrementTime() {
+        $(".timer-container").html(timer);
+        if (timer == 0) {
+            handleExpiredTimer();
+        } else {
+            timer -= 1;
+        }
+    }
+    
+    //Resets the timer to 10 seconds
+    function resetTimer() {
+        timer = 10;
+        $(".timer-container").html(timer);
+
+    }
+
+    //Reset the question, timer, and streak when the time expires
+    function handleExpiredTimer() {
+        streak = 0;
+        $(".streak-container").html(streakString + streak);
+        $.ajax({
+            url: 'Question/GetQuestion',
+            type: 'POST',
+            success: function (result) {
+                $(".question-container").html(result);
+                resetTimer();
+            }
+        })
+    }
+
+    //Fetches a new question
+    function getNewQuestion(e) {
+        resetTimer();
+        $.ajax({
+            url: 'Question/GetQuestion',
+            type: 'POST',
+            success: function (result) {
+                refresh(result, e)
+            }
+        })
+    }
+
+
+    //Refreshes html elements to reflect new question data
+    function refresh(result, e) {
+        if (e.target.value == 'value') {
+            $(e.target).css("background-color", "#64BA61");
+            streak++;
+            $(".streak-container").html(streakString + streak);
+
+        } else {
+            $(e.target).css("background-color", "#EC5050")
+            streak = 0;
+            $(".streak-container").html(streakString + streak);
+
+        }
+        setTimeout(function () {
+            resetTimer();
+            $(".question-container").html(result);
+        }, 500)
+
+    }
+
+
+
+</script>
+
+<div class="timer-container">10</div>
+<div class="question-container">
+    <partial name="/Views/Shared/_Question.cshtml" />
+</div>
+<div class="streak-container">Streak: 0</div>
+
+
+
